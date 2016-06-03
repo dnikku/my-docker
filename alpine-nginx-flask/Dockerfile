@@ -6,6 +6,6 @@ FROM alpine
 #  to avoid install curl/wget
 ADD ./get-pip.py /
 
-RUN apk update && apk add python nginx \
+RUN apk update && apk add python nginx-lua \
     && python get-pip.py && rm /get-pip.py \
     && pip install flask supervisor gunicorn
