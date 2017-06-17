@@ -7,34 +7,36 @@ from fabric.api import (
 from pprint import pprint
 import json
 from os import path
-
+from io import StringIO
 
 env.hosts = ["ec2-user@ec2-server:9022"]
 env.output_prefix = False
 
-image_name = "my-boto3"
+image_name = "my-bastion"
 app_name = image_name
 remote_dir = "/home/ec2-user/.%s" % image_name
+
+def _read_file(filepath):
+    filepath = path.expanduser(filepath)
+    with open(filepath, 'r') as f:
+        return f.read()
 
 
 def dk_build():
     dk_stop()
     dk_rm()
-    run("rm -rf %s" % remote_dir)
-    run("mkdir -p %s/dnikku/.ssh" % remote_dir)
-    run("mkdir -p %s/dnikku/.aws" % remote_dir)
+    run("rm -rf {0}; mkdir -p {0}/.build".format(remote_dir))
     with cd(remote_dir):
-        put("~/.ssh/id_rsa.pub", "./dnikku/.ssh/authorized_keys")
-        put("./_aws/*", "./dnikku/.aws")
-        put("./my-boto3-init.sh", ".")
+        put(path.expanduser("~/.ssh/id_rsa.pub"), ".build/id_rsa.pub")
         put("./Dockerfile", ".")
         run("docker build . -t %s" % image_name)
 
-def dk_start(run_script='no'):
+def dk_start():
     dk_build()
     with cd(remote_dir):
         run("docker run -dt -p 9023:22 --name %s %s"
             % (app_name, image_name))
+    dk_ps()
 
 def dk_stop():
     run("docker stop -t1 %s || true" % app_name)
