@@ -12,8 +12,8 @@ from io import StringIO
 env.hosts = ["ec2-user@ec2-server:9022"]
 env.output_prefix = False
 
-image_name = "my-bastion"
-app_name = image_name
+app_name = "my-bastion"
+image_name = "my-bastion.i"
 remote_dir = "/home/ec2-user/.%s" % image_name
 
 def _read_file(filepath):
@@ -34,7 +34,7 @@ def dk_build():
 def dk_start():
     dk_build()
     with cd(remote_dir):
-        run("docker run -dt -p 9023:22 --name %s %s"
+        run("docker run -dt -p 9023:22 --privileged --name %s %s"
             % (app_name, image_name))
     dk_ps()
 

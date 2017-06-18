@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Copy this file in dir: /etc/network/interfaces.d/
+
+# see https://help.ubuntu.com/community/SSH_VPN &
+# https://debian-administration.org/article/539/Setting_up_a_Layer_3_tunneling_VPN_with_using_OpenSSH
+iface tun0 inet static
+     pre-up ssh -S /var/run/ssh-myvpn-tunnelcontrol \
+            -M -f -w 0:0 -p 9023 root@ec2-server \
+            -i /home/dnikku/.ssh/id_rsa true
+     pre-up sleep 5
+     address 10.254.254.2
+     netmask 255.255.255.252
+     pointopoint 10.254.254.1
+     up ip route add 10.0.0.0/16 via 10.254.254.2
+     up ip route add 172.17.0.0/16 via 10.254.254.2
+     post-down ssh -v -S /var/run/ssh-myvpn-tunnelcontrol \
+               -O exit -p 9023 root@ec2-server \
+               -i /home/dnikku/.ssh/id_rsa
