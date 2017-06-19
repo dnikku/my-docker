@@ -4,6 +4,8 @@ FROM ubuntu:16.10
 RUN apt-get -y update
 RUN apt-get -y install openssh-server sudo less
 RUN apt-get install -y net-tools iproute iptables ifupdown traceroute
+RUN wget https://bootstrap.pypa.io/get-pip.py && python3 get-pip.py && rm get-pip.py && \
+    pip install boto3
 
 #RUN rm -rf /var/lib/apt/lists/*
 RUN passwd -d root && mkdir -p /var/run/sshd
@@ -21,6 +23,7 @@ RUN \
     usermod -p "\$6\$*" $MY_USER && \
     mkdir -p /home/$MY_USER/.ssh && \
     cat /tmp/.build/id_rsa.pub >> /home/$MY_USER/.ssh/authorized_keys && \
+    mv /tmp/.build/.aws /home/$MY_USER && \
     chown -R $MY_USER:$MY_USER /home/$MY_USER && \
     chmod -R 0700 /home/$MY_USER && \
     chmod 0600 /home/$MY_USER/.ssh/authorized_keys && \

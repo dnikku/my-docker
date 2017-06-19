@@ -25,9 +25,10 @@ def _read_file(filepath):
 def dk_build():
     dk_stop()
     dk_rm()
-    run("rm -rf {0}; mkdir -p {0}/.build".format(remote_dir))
+    run("rm -rf {0}; mkdir -p {0}/.build/.aws".format(remote_dir))
     with cd(remote_dir):
         put(path.expanduser("~/.ssh/id_rsa.pub"), ".build/id_rsa.pub")
+        put("_aws/*", ".build/.aws")
         put("./Dockerfile", ".")
         run("docker build . -t %s" % image_name)
 
