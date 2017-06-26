@@ -34,6 +34,9 @@ def dk_build(image=image_name):
         run("mkdir -p python")
         put("./python/*", "./python/")
 
+        run("mkdir -p java")
+        put("./java/*", "./java/")
+
         put("./Dockerfile", ".")
         run("docker build . -t %s" % image)
 

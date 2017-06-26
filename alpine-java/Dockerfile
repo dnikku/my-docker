@@ -23,6 +23,11 @@ RUN /bin/sh /tmp/.build/ssh/ssh-setup.sh $MY_USER /tmp/.build/ssh
 ADD python /tmp/.build/python
 RUN /bin/sh /tmp/.build/python/python3-setup.sh
 
+# java setup
+ADD java /tmp/.build/java
+#RUN /build/oraclejdk_1.8-setup.sh
+RUN /bin/sh /tmp/.build/java/openjdk_1.8-setup.sh
+
 RUN rm -rf /var/cache/apk/* /tmp/.build
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
