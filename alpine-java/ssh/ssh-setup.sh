@@ -16,7 +16,12 @@ usermod -p "\$6\$*" $MY_USER
 
 mkdir -p /home/$MY_USER/.ssh
 cat $MY_SSH_DIR/authorized_keys >> /home/$MY_USER/.ssh/authorized_keys
+cat $MY_SSH_DIR/id_rsa > /home/$MY_USER/.ssh/id_rsa
 chmod 0600 /home/$MY_USER/.ssh/authorized_keys
+
+echo "
+StrictHostKeyChecking no
+UserKnownHostsFile=/dev/null" > /home/$MY_USER/.ssh/config
 
 chown -R $MY_USER:$MY_USER /home/$MY_USER
 chmod -R 0700 /home/$MY_USER

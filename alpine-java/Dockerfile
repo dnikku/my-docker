@@ -12,10 +12,10 @@ RUN \
     echo "Welcome to Alpine: $(cat /etc/alpine-release)!" > /etc/motd && \
     mkdir -p /tmp/.build
 
-# syslog setup
+# setup syslog
 ADD syslog.conf /etc/syslog.conf
 
-# ssh setup + create MY_USER
+# setup ssh + create MY_USER
 ADD ssh /tmp/.build/ssh
 RUN /bin/sh /tmp/.build/ssh/ssh-setup.sh $MY_USER /tmp/.build/ssh
 
@@ -23,10 +23,14 @@ RUN /bin/sh /tmp/.build/ssh/ssh-setup.sh $MY_USER /tmp/.build/ssh
 ADD python /tmp/.build/python
 RUN /bin/sh /tmp/.build/python/python3-setup.sh
 
-# java setup
+# setup java
 ADD java /tmp/.build/java
 #RUN /build/oraclejdk_1.8-setup.sh
 RUN /bin/sh /tmp/.build/java/openjdk_1.8-setup.sh
+
+# setup hadoop
+ADD hadoop /tmp/.build/hadoop
+RUN /bin/sh /tmp/.build/hadoop/hadoop-setup.sh $MY_USER '2.7.3'
 
 RUN rm -rf /var/cache/apk/* /tmp/.build
 
