@@ -67,3 +67,6 @@ def dk_rmi_prune():
         run("docker ps -qa -f 'status=exited' | xargs -r docker rm")
         run("docker images -qa -f 'dangling=true' | xargs -r docker rmi")
 
+def dk_start_dns():
+    dk_stop("my-dns")
+    run("docker run -d --name my-dns -h my-dns -v /var/run/docker.sock:/tmp/docker.sock -v /etc/resolv.conf:/tmp/resolv.conf mgood/resolvable")
