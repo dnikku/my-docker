@@ -2,10 +2,24 @@ FROM alpine:3.6
 
 LABEL maintainer "https://github.com/dnikku"
 
+ENV MY_USER=dnikku
+
 RUN \
-    apk add --update --no-cache bash && \
-    echo "Welcome to Alpine: $(cat /etc/alpine-release)!" > /etc/motd
+    # add edge repositories
+    echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
+    echo "http://dl-2.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
+    apk add --update --no-cache bash dumb-init && \
+    echo "Welcome to Alpine: $(cat /etc/alpine-release)!" > /etc/motd && \
+    mkdir -p /tmp/.build
 
-RUN rm /var/cache/apk/*
+# ssh setup + create MY_USER
+ADD ssh /tmp/.build/ssh
+RUN /bin/sh /tmp/.build/ssh/ssh-setup.sh $MY_USER /tmp/.build/ssh
 
-CMD ["bash"]
+
+RUN rm -rf /var/cache/apk/* /tmp/.build
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+
+#CMD ["bash", "-c", "do-some-pre-start-thing && exec my-server"]
+CMD ["bash", "-c", "exec /usr/sbin/sshd -D -e"]
