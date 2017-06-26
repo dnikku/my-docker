@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+
+<property>
+  <name>fs.s3a.endpoint</name>
+  <value>s3.amazonaws.com</value>
+</property>
+
+<property>
+  <name>fs.s3a.access.key</name>
+  <value></value>
+</property>
+
+
+<!-- omit for IAM role based authentication
+<property>
+  <name>fs.s3a.secret.key</name>
+  <value>...</value>
+</property>
+-->
+
+<property>
+  <name>fs.s3a.buffer.dir</name>
+  <value>${hadoop.tmp.dir}/s3a</value>
+</property>
+
+<!-- necessary for Hadoop to load our filesystem driver
+    http://hadoop.apache.org/docs/current/hadoop-aws/tools/hadoop-aws/index.html
+-->
+<property>
+  <name>fs.s3a.impl</name>
+  <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
+</property>
+
+<property>
+  <name>fs.s3a.connection.ssl.enabled</name>
+  <value>true</value>
+  <description>Enables or disables SSL connections to S3.</description>
+</property>
+
+</configuration>

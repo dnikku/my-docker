@@ -22,7 +22,7 @@
 # remote nodes.
 JAVA_HOME=/usr/lib/jvm/default-jvm
 
-HADOOP_CLASSPATH=$HADOOP_CLASSPATH/home/dnikku/hadoop-2.7.3/share/hadoop/tools/lib/*.jar
+HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/home/dnikku/hadoop-2.7.3/share/hadoop/tools/lib/*
 
 
 # The java implementation to use.
