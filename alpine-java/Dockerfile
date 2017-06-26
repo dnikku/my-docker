@@ -8,9 +8,12 @@ RUN \
     # add edge repositories
     echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
     echo "http://dl-2.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
-    apk add --update --no-cache bash dumb-init && \
+    apk add --update --no-cache bash dumb-init inetutils-syslogd && \
     echo "Welcome to Alpine: $(cat /etc/alpine-release)!" > /etc/motd && \
     mkdir -p /tmp/.build
+
+# syslog setup
+ADD syslog.conf /etc/syslog.conf
 
 # ssh setup + create MY_USER
 ADD ssh /tmp/.build/ssh
@@ -22,4 +25,4 @@ RUN rm -rf /var/cache/apk/* /tmp/.build
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 
 #CMD ["bash", "-c", "do-some-pre-start-thing && exec my-server"]
-CMD ["bash", "-c", "exec /usr/sbin/sshd -D -e"]
+CMD ["bash", "-c", "syslogd && exec /usr/sbin/sshd -D"]
