@@ -31,6 +31,9 @@ def dk_build(image=image_name):
         put("~/.ssh/id_rsa.pub", "./ssh/authorized_keys")
         put("./syslog.conf", ".")
 
+        run("mkdir -p python")
+        put("./python/*", "./python/")
+
         put("./Dockerfile", ".")
         run("docker build . -t %s" % image)
 

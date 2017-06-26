@@ -19,6 +19,9 @@ ADD syslog.conf /etc/syslog.conf
 ADD ssh /tmp/.build/ssh
 RUN /bin/sh /tmp/.build/ssh/ssh-setup.sh $MY_USER /tmp/.build/ssh
 
+# setup python3
+ADD python /tmp/.build/python
+RUN /bin/sh /tmp/.build/python/python3-setup.sh
 
 RUN rm -rf /var/cache/apk/* /tmp/.build
 
