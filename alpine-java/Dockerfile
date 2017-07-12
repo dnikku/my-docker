@@ -8,7 +8,7 @@ RUN \
     # add edge repositories
     echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
     echo "http://dl-2.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
-    apk add --update --no-cache bash dumb-init inetutils-syslogd && \
+    apk add --update --no-cache bash util-linux procps dumb-init inetutils-syslogd && \
     echo "Welcome to Alpine: $(cat /etc/alpine-release)!" > /etc/motd && \
     mkdir -p /tmp/.build
 

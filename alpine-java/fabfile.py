@@ -102,6 +102,8 @@ def dk_start_dns():
 
 def dk_start_cluster(slaves_nr=2, image=image_name):
     master_ssh_port = 9023
+    slaves_nr = int(slaves_nr)
+    
     dk_stop_cluster(slaves_nr)
 
     run("docker run -dt -p {2}:22 -p 8088:8088 -h {0} --name {0} {1}".format("my-hd-master", image, master_ssh_port))
@@ -130,5 +132,24 @@ def dk_ls_s3a():
     aws_secret_key = local("sed -n 's/aws_secret_access_key=\\(.*\\)$/\\1/p' ~/.aws/credentials", capture=True)
 
     with settings(host_string="%s:9023" % ssh_server):
-        run("hadoop classpath")
-        run("hadoop fs -D fs.s3a.access.key={0} -D fs.s3a.secret.key={1} -ls s3a://s40aws.demo/".format(aws_access_key, aws_secret_key))
+        #run("hadoop classpath")
+        def run_fs(cmd, capture=False):
+            run("hadoop fs -D fs.s3a.access.key={0} -D fs.s3a.secret.key={1} {2}".format(aws_access_key, aws_secret_key, cmd), capture)
+
+        f = run_fs("-ls s3a://ms40aws.bill-reports/*", capture=True)
+        #f = run_fs("-cat s3a://ms40aws.bill-reports/307973978526-aws-billing-csv-2017-05.csv", True)
+        print(f)
+        #f = run_fs("-cat s3a://ms40aws.bill-reports/307973978526-aws-billing-detailed-line-items-2017-05.csv.zip > items.csv.zip", True)
+        print(f)
+
+def dk_mapreduce():
+    aws_access_key = local("sed -n 's/aws_access_key_id=\\(.*\\)$/\\1/p' ~/.aws/credentials", capture=True)
+    aws_secret_key = local("sed -n 's/aws_secret_access_key=\\(.*\\)$/\\1/p' ~/.aws/credentials", capture=True)
+
+    with settings(host_string="%s:9023" % ssh_server):
+        put("./examples/awscost/*.py", ".", mode="0700")
+        run("hadoop jar hadoop/share/hadoop/tools/lib/hadoop-streaming-*.jar" +
+            " -D fs.s3a.access.key={0} -D fs.s3a.secret.key={1}".format(aws_access_key, aws_secret_key) +
+            #" -files ./mapper.py,./reducer.py" +
+            " -mapper 'python3 /home/dnikku/mapper.py' -reducer 'python3 /home/dnikku/reducer.py'"
+            " -input s3a://ms40aws.bill-reports/*.csv -output s3a://ms40aws.demo/dk2017/report-$(date | sed 's/ //g')")
